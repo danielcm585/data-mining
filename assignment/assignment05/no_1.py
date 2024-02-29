@@ -10,5 +10,5 @@ for i in range(len(graph.nodes)):
     print(f"> degree centrality: {degree_centrality[node.id]}")
     print(f"> neighbors:")
     for neighbor in node.neighbors:
-        print(f"  - {neighbor}")
+        print(f"  - {neighbor} ({graph.adjacency_matrix[node.id][neighbor.id]})")
     
