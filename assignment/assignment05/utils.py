@@ -73,10 +73,19 @@ class Graph:
             self.adjacency_matrix[node_2.id][node_1.id] = weight
 
     def get_degree_centrality(self):
-        return [
-            sum(self.adjacency_matrix[i]) / (self.num_of_nodes-1)
-            for i in range(len(self.nodes))
-        ]
+        if self.is_directed:
+            return (
+                [sum([self.adjacency_matrix[j][i] for j in range(len(self.nodes))]) / (len(self.nodes)-1)
+                    for i in range(len(self.nodes))],
+                [sum(self.adjacency_matrix[i]) / (len(self.nodes)-1)
+                    for i in range(len(self.nodes))]
+            )
+
+        else:            
+            return [
+                sum(self.adjacency_matrix[i]) / (len(self.nodes)-1)
+                for i in range(len(self.nodes))
+            ]
 
 
 if __name__ == '__main__':
