@@ -51,10 +51,6 @@ class Graph:
             node_1 = self.get_node(row['Node1'])
             node_2 = self.get_node(row['Node2'])
             self.add_edge(node_1, node_2, row['Weight'])
-            
-    @property
-    def num_of_nodes(self):
-        return len(self.nodes)
     
     def get_node(self, name: str) -> Node:
         if name not in self.name_to_node:
