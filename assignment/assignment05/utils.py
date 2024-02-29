@@ -6,19 +6,40 @@ class Node:
         self.id = id
         self.name = name
         self.neighbors = []
-
-    def __repr__(self):
-        return f"Node({self.name})"
     
     @property
     def degree(self):
         return len(self.neighbors)
 
+    def add_neighbor(self, node: 'Node'):
+        self.neighbors.append(node)
+        node.neighbors.append(self)
+
+
+class DirectedNode(Node):
+    def __init__(self, id: int, name: str):
+        super().__init__(id, name)
+        self.in_neighbors = []
+        self.out_neighbors = []
+
+    def add_neighbor(self, node: 'DirectedNode'):
+        self.out_neighbors.append(node)
+        node.in_neighbors.append(self)
+
+    @property
+    def in_degree(self):
+        return len(self.in_neighbors)
+
+    @property
+    def out_degree(self):
+        return len(self.out_neighbors)
+
 
 class Graph:
     MAX_NODE = 2000
 
-    def __init__(self, csv_file: str):
+    def __init__(self, csv_file: str, is_directed: bool = False):
+        self.is_directed = is_directed
         self.name_to_node = {}
         self.nodes = []
         self.adjacency_matrix = [
@@ -37,16 +58,19 @@ class Graph:
     
     def get_node(self, name: str) -> Node:
         if name not in self.name_to_node:
-            new_node = Node(len(self.nodes), name)
+            if self.is_directed:
+                new_node = DirectedNode(len(self.nodes), name)
+            else:
+                new_node = Node(len(self.nodes), name)
             self.name_to_node[name] = new_node
             self.nodes.append(new_node)
         return self.name_to_node[name]
 
     def add_edge(self, node_1: Node, node_2: Node, weight: int):
-        node_1.neighbors.append(node_2)
-        node_2.neighbors.append(node_1)
+        node_1.add_neighbor(node_2)
         self.adjacency_matrix[node_1.id][node_2.id] = weight
-        self.adjacency_matrix[node_2.id][node_1.id] = weight
+        if not self.is_directed:
+            self.adjacency_matrix[node_2.id][node_1.id] = weight
 
     def get_degree_centrality(self):
         return [
