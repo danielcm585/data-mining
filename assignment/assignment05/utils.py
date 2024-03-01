@@ -1,4 +1,6 @@
 import pandas as pd
+import heapq
+from typing import List
 
 
 class Node:
@@ -7,6 +9,9 @@ class Node:
         self.name = name
         self.neighbors = []
     
+    def __lt__(self, other: 'Node'):
+        return self.name < other.name
+
     @property
     def degree(self):
         return len(self.neighbors)
@@ -37,6 +42,7 @@ class DirectedNode(Node):
 
 class Graph:
     MAX_NODE = 2000
+    INFINITY = int(1e18)
 
     def __init__(self, csv_file: str, is_directed: bool = False):
         self.is_directed = is_directed
@@ -67,6 +73,31 @@ class Graph:
         self.adjacency_matrix[node_1.id][node_2.id] = weight
         if not self.is_directed:
             self.adjacency_matrix[node_2.id][node_1.id] = weight
+
+    def get_shortest_path(self, start: str) -> List[int]:
+        try:
+            start_node = self.name_to_node[start]
+        except:
+            raise KeyError('Start node not valid')
+
+        dist = [Graph.INFINITY] * len(self.nodes)
+        pq = []
+        
+        dist[start_node.id] = 0
+        heapq.heappush(pq, [0, start_node])
+
+        while len(pq) > 0:
+            cur_dist, cur_node = heapq.heappop(pq)
+            if dist[cur_node.id] != cur_dist:
+                continue
+            for nx_node in cur_node.out_neighbors:
+                weight = self.adjacency_matrix[cur_node.id][nx_node.id]
+                if dist[nx_node.id] > cur_dist + weight:
+                    print(f"{cur_node.name} ke {nx_node.name}")
+                    dist[nx_node.id] = cur_dist + weight
+                    heapq.heappush(pq, [dist[nx_node.id], nx_node])
+
+        return dist
 
 
 if __name__ == '__main__':
