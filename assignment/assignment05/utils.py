@@ -1,5 +1,7 @@
 import pandas as pd
 import heapq
+import networkx as nx
+import matplotlib.pyplot as plt
 from typing import List
 
 
@@ -98,6 +100,25 @@ class Graph:
                     heapq.heappush(pq, [dist[nx_node.id], nx_node])
 
         return dist
+
+    def visualize(self):
+        G_nx = nx.DiGraph() if self.is_directed else nx.Graph()
+
+        for node in self.nodes:
+            G_nx.add_node(node.name)
+
+            for neighbor in (node.out_neighbors if self.is_directed else node.neighbors):
+                if not G_nx.has_edge(node.name, neighbor.name):
+                    weight = self.adjacency_matrix[node.id][neighbor.id]
+                    G_nx.add_edge(node.name, neighbor.name, weight=weight)
+
+        pos = nx.spring_layout(G_nx)
+        nx.draw(G_nx, pos, with_labels=True, node_size=700, node_color="skyblue", font_size=10)
+        
+        edge_labels = nx.get_edge_attributes(G_nx, 'weight')
+        nx.draw_networkx_edge_labels(G_nx, pos, edge_labels=edge_labels)
+
+        plt.show()
 
 
 if __name__ == '__main__':
