@@ -68,21 +68,6 @@ class Graph:
         if not self.is_directed:
             self.adjacency_matrix[node_2.id][node_1.id] = weight
 
-    def get_degree_centrality(self):
-        if self.is_directed:
-            return (
-                [sum([self.adjacency_matrix[j][i] for j in range(len(self.nodes))]) / (len(self.nodes)-1)
-                    for i in range(len(self.nodes))],
-                [sum(self.adjacency_matrix[i]) / (len(self.nodes)-1)
-                    for i in range(len(self.nodes))]
-            )
-
-        else:            
-            return [
-                sum(self.adjacency_matrix[i]) / (len(self.nodes)-1)
-                for i in range(len(self.nodes))
-            ]
-
 
 if __name__ == '__main__':
     graph = Graph('graph.csv')
